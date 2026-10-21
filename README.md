@@ -196,7 +196,7 @@ Application configuration is stored in `.env`. Key settings:
 
 ```ini
 # Flask secret key for sessions
-SECRET_KEY=smart_placement_super_secret_dev_key_2026
+SECRET_KEY=your-secret-key-here
 
 # MySQL Database credentials
 DB_HOST=localhost
