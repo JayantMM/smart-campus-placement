@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}404 - Page Not Found | Smart Campus Placement{% endblock %}
+
+{% block content %}
+<div class="container" style="text-align: center; padding: 60px 20px;">
+    <div style="font-size: 5rem; font-weight: 900; color: var(--primary-700); line-height: 1; margin-bottom: 16px;">
+        404
+    </div>
+    <h1 style="font-size: 2rem; font-weight: 800; color: var(--slate-900); margin-bottom: 12px;">
+        Page Not Found
+    </h1>
+    <p style="color: var(--slate-600); max-width: 500px; margin: 0 auto 32px auto; font-size: 1.1rem;">
+        The page you are looking for may have been moved, deleted, or does not exist. Please check the URL or return to the main portal.
+    </p>
+
+    <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+        <a href="{{ url_for('home') }}" class="btn btn-primary btn-lg">Return to Home</a>
+        <a href="{{ url_for('jobs') }}" class="btn btn-secondary btn-lg">Browse Campus Jobs</a>
+    </div>
+</div>
+{% endblock %}
+

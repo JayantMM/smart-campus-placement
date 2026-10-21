@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard | Smart Campus Placement{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 28px;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; color: var(--primary-900);">Welcome, {{ student.full_name }}! 👋</h1>
+            <p style="color: var(--slate-600);">{{ student.department }} &bull; {{ student.college_name }}</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <a href="{{ url_for('jobs') }}" class="btn btn-primary">Browse New Jobs</a>
+            <a href="{{ url_for('student_profile') }}" class="btn btn-secondary">Edit Profile</a>
+        </div>
+    </div>
+
+    <!-- Student Metrics -->
+    <div class="dashboard-metrics">
+        <div class="metric-card">
+            <div class="metric-icon metric-blue">📄</div>
+            <div>
+                <div class="metric-value">{{ stats.total_applied | default(0) }}</div>
+                <div class="metric-title">Total Applications</div>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon metric-amber">⏳</div>
+            <div>
+                <div class="metric-value">{{ stats.pending | default(0) }}</div>
+                <div class="metric-title">Pending Review</div>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon metric-blue">🎯</div>
+            <div>
+                <div class="metric-value">{{ stats.shortlisted | default(0) }}</div>
+                <div class="metric-title">Shortlisted</div>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon metric-emerald">🎉</div>
+            <div>
+                <div class="metric-value">{{ stats.selected | default(0) }}</div>
+                <div class="metric-title">Selected / Offers</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Applications Section -->
+    <div class="card" style="margin-bottom: 36px;">
+        <div class="card-header">
+            <h2 class="card-title">Recent Job Applications</h2>
+            <a href="{{ url_for('student_applications') }}" class="btn btn-secondary btn-sm">View All Applications &rarr;</a>
+        </div>
+
+        {% if recent_applications %}
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Job Role</th>
+                            <th>Applied Date</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in recent_applications %}
+                            <tr>
+                                <td><strong>{{ app.company_name }}</strong></td>
+                                <td>{{ app.job_title }}</td>
+                                <td>{{ app.applied_at.strftime('%d %b %Y') if app.applied_at else 'Recent' }}</td>
+                                <td>
+                                    <span class="badge badge-{{ app.application_status.lower() }}">
+                                        {{ app.application_status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('job_details', job_id=app.job_id) }}" class="btn btn-secondary btn-sm">View Job</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📂</div>
+                <h3>No Applications Submitted Yet</h3>
+                <p>You haven't applied for any recruitment drives yet. Explore open jobs and take your first step!</p>
+                <a href="{{ url_for('jobs') }}" class="btn btn-primary">Browse Active Jobs</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Recommended Active Jobs -->
+    {% if open_jobs %}
+        <div style="margin-bottom: 24px;">
+            <div class="card-header" style="border: none; padding-bottom: 0;">
+                <h2 class="card-title">Recommended Openings for You</h2>
+                <a href="{{ url_for('jobs') }}" class="btn btn-secondary btn-sm">View All Jobs</a>
+            </div>
+
+            <div class="jobs-grid" style="margin-top: 16px;">
+                {% for job in open_jobs %}
+                    <article class="job-card">
+                        <span class="job-badge-active">Open</span>
+                        <div>
+                            <div class="job-company">{{ job.company_name }}</div>
+                            <h3 class="job-title" style="font-size: 1.15rem;">{{ job.job_title }}</h3>
+                            <div class="job-meta-list">
+                                <div class="job-meta-item">📍 {{ job.location }}</div>
+                                {% if job.salary %}<div class="job-meta-item">💰 {{ job.salary }}</div>{% endif %}
+                                <div class="job-meta-item">⏳ Deadline: {{ job.application_deadline }}</div>
+                            </div>
+                        </div>
+                        <div class="job-footer">
+                            <a href="{{ url_for('job_details', job_id=job.id) }}" class="btn btn-primary btn-sm">Apply Now</a>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

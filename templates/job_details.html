@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}{{ job.job_title }} at {{ job.company_name }} | Smart Campus Placement{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="margin-bottom: 20px;">
+        <a href="{{ url_for('jobs') }}" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--slate-600);">
+            &larr; Back to all job openings
+        </a>
+    </div>
+
+    <div class="job-detail-grid">
+        <!-- Main Job Specifications -->
+        <div class="job-detail-card">
+            <div style="display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 16px;">
+                <div>
+                    <div class="job-company" style="font-size: 1.05rem;">{{ job.company_name }}</div>
+                    <h1 style="font-size: 2rem; font-weight: 800; color: var(--primary-900); margin: 6px 0 12px 0;">{{ job.job_title }}</h1>
+                </div>
+
+                {% if job.status == 'Active' %}
+                    <span class="badge badge-active">Active Drive</span>
+                {% else %}
+                    <span class="badge badge-inactive">Inactive</span>
+                {% endif %}
+            </div>
+
+            <div class="job-tags" style="margin-bottom: 24px;">
+                {% for skill in job.required_skills.split(',') %}
+                    <span class="skill-tag" style="font-size: 0.9rem; padding: 4px 12px;">{{ skill.strip() }}</span>
+                {% endfor %}
+            </div>
+
+            <div style="margin-bottom: 32px;">
+                <h3 style="font-size: 1.2rem; color: var(--primary-900); margin-bottom: 12px;">Job Description & Role Overview</h3>
+                <div style="color: var(--slate-700); line-height: 1.8; white-space: pre-line;">{{ job.description }}</div>
+            </div>
+
+            <div style="margin-bottom: 32px;">
+                <h3 style="font-size: 1.2rem; color: var(--primary-900); margin-bottom: 12px;">Candidate Eligibility Criteria</h3>
+                <p style="background: var(--slate-50); border-left: 4px solid var(--primary-500); padding: 14px 18px; border-radius: var(--radius-sm); color: var(--slate-800); font-weight: 500;">
+                    {{ job.eligibility }}
+                </p>
+            </div>
+
+            <!-- Application Section -->
+            <div style="border-top: 1px solid var(--slate-200); padding-top: 28px; margin-top: 28px;">
+                {% if is_expired %}
+                    <div class="alert alert-warning">
+                        <strong>Application Closed:</strong> The application deadline for this drive was {{ job.application_deadline }}. No new applications are being accepted.
+                    </div>
+
+                {% elif existing_application %}
+                    <div class="card" style="background: var(--primary-50); border-color: var(--primary-100);">
+                        <h3 style="color: var(--primary-800); font-size: 1.15rem; margin-bottom: 8px;">Your Application Status</h3>
+                        <p style="margin-bottom: 12px; color: var(--slate-700);">
+                            You applied for this position on <strong>{{ existing_application.applied_at }}</strong>.
+                        </p>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <span>Current Status:</span>
+                            <span class="badge badge-{{ existing_application.application_status.lower() }}">
+                                {{ existing_application.application_status }}
+                            </span>
+                        </div>
+                    </div>
+
+                {% elif session.get('role') == 'student' %}
+                    <div id="apply-form-section">
+                        <h3 style="font-size: 1.3rem; color: var(--primary-900); margin-bottom: 8px;">Apply for this Position</h3>
+                        <p style="color: var(--slate-600); margin-bottom: 20px;">
+                            Upload your resume (PDF or DOC/DOCX format, max 5MB) and submit your application.
+                        </p>
+
+                        <form action="{{ url_for('apply_job', job_id=job.id) }}" method="POST" enctype="multipart/form-data">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                            <div class="form-group">
+                                <label for="resume">Upload Resume (PDF, DOC, DOCX) <span style="color: var(--accent-rose);">*</span></label>
+                                <div class="file-upload-box" id="resumeBox">
+                                    <div style="font-size: 2rem; margin-bottom: 8px;">📄</div>
+                                    <p class="file-upload-name">Click or drag & drop your resume file here (Max 5MB)</p>
+                                    <span style="font-size: 0.8rem; color: var(--slate-500);">Supported formats: .pdf, .doc, .docx</span>
+                                    <input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cover_letter">Cover Letter / Note to Recruiter (Optional)</label>
+                                <textarea
+                                    id="cover_letter"
+                                    name="cover_letter"
+                                    class="form-control"
+                                    rows="4"
+                                    placeholder="Briefly explain your key strengths, projects, and why you are interested in this position..."
+                                ></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-lg">Submit Application</button>
+                        </form>
+                    </div>
+
+                {% elif session.get('role') == 'admin' %}
+                    <div class="card" style="background: var(--slate-50);">
+                        <p style="color: var(--slate-700); margin-bottom: 12px;">
+                            You are logged in as an administrator. You can review all candidate applications for this opening.
+                        </p>
+                        <a href="{{ url_for('admin_applications') }}?job_id={{ job.id }}" class="btn btn-primary">
+                            View Applications for this Job &rarr;
+                        </a>
+                    </div>
+
+                {% else %}
+                    <div class="card" style="text-align: center; background: var(--slate-50); padding: 32px;">
+                        <h3 style="font-size: 1.25rem; color: var(--primary-900); margin-bottom: 8px;">Interested in this opportunity?</h3>
+                        <p style="color: var(--slate-600); margin-bottom: 20px;">
+                            Sign in with your student account or create a new student profile to apply.
+                        </p>
+                        <div style="display: flex; justify-content: center; gap: 12px;">
+                            <a href="{{ url_for('login') }}" class="btn btn-primary">Login to Apply</a>
+                            <a href="{{ url_for('register') }}" class="btn btn-secondary">Register as Student</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Sidebar Summary -->
+        <div class="job-sidebar-card">
+            <h3 style="font-size: 1.15rem; color: var(--primary-900); margin-bottom: 16px; border-bottom: 1px solid var(--slate-200); padding-bottom: 10px;">
+                Drive Overview
+            </h3>
+
+            <div class="job-meta-list" style="font-size: 0.95rem; gap: 12px;">
+                <div>
+                    <strong style="color: var(--slate-700); display: block; font-size: 0.8rem; text-transform: uppercase;">Company</strong>
+                    <span>{{ job.company_name }}</span>
+                </div>
+
+                <div>
+                    <strong style="color: var(--slate-700); display: block; font-size: 0.8rem; text-transform: uppercase;">Location</strong>
+                    <span>📍 {{ job.location }}</span>
+                </div>
+
+                {% if job.salary %}
+                <div>
+                    <strong style="color: var(--slate-700); display: block; font-size: 0.8rem; text-transform: uppercase;">CTC / Salary</strong>
+                    <span style="font-weight: 700; color: var(--accent-emerald);">💰 {{ job.salary }}</span>
+                </div>
+                {% endif %}
+
+                <div>
+                    <strong style="color: var(--slate-700); display: block; font-size: 0.8rem; text-transform: uppercase;">Deadline</strong>
+                    <span style="color: {% if is_expired %}var(--accent-rose){% else %}var(--slate-800){% endif %}; font-weight: 600;">
+                        ⏳ {{ job.application_deadline }}
+                        {% if is_expired %}(Expired){% endif %}
+                    </span>
+                </div>
+
+                <div>
+                    <strong style="color: var(--slate-700); display: block; font-size: 0.8rem; text-transform: uppercase;">Drive Status</strong>
+                    <span>{{ job.status }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

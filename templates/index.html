@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block title %}Home | Smart Campus Placement Management System{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="container hero-content">
+        <span class="hero-subtitle-tag">Empowering Campus Placements</span>
+        <h1>Your Journey to a Successful Career Starts Here</h1>
+        <p>
+            Welcome to the Smart Campus Placement Management System. Discover top company recruitment drives, submit job applications with your resume, and track your selection status in real time.
+        </p>
+
+        <div class="hero-cta">
+            <a href="{{ url_for('jobs') }}" class="btn btn-primary btn-lg">Explore Jobs</a>
+            {% if not session.get('user_id') and not session.get('admin_id') %}
+                <a href="{{ url_for('register') }}" class="btn btn-outline btn-lg">Get Started</a>
+            {% elif session.get('role') == 'student' %}
+                <a href="{{ url_for('student_dashboard') }}" class="btn btn-outline btn-lg">Go to Dashboard</a>
+            {% elif session.get('role') == 'admin' %}
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline btn-lg">Admin Dashboard</a>
+            {% endif %}
+        </div>
+
+        <!-- Summary Statistics from Database -->
+        <div class="hero-stats">
+            <div class="stat-item">
+                <span class="stat-number">{{ stats.active_jobs | default(0) }}</span>
+                <span class="stat-label">Active Job Openings</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">{{ stats.total_students | default(0) }}</span>
+                <span class="stat-label">Registered Students</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">{{ stats.total_companies | default(0) }}</span>
+                <span class="stat-label">Hiring Companies</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">{{ stats.selected_students | default(0) }}</span>
+                <span class="stat-label">Selected Offers</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="container" style="padding-top: 56px;">
+    <div class="section-header">
+        <h2>Smart Placement Platform Features</h2>
+        <p>Everything students and placement coordinators need for a seamless recruitment drive</p>
+    </div>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon" aria-hidden="true">📝</div>
+            <h3>Student Registration</h3>
+            <p>
+                Easy profile setup with academic details, branch information, and secure credential management.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon" aria-hidden="true">💼</div>
+            <h3>Job Opportunities</h3>
+            <p>
+                Browse comprehensive job listings with detailed eligibility, package details, job descriptions, and deadlines.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon" aria-hidden="true">📈</div>
+            <h3>Application Tracking</h3>
+            <p>
+                Live transparent tracking for every submitted application across Pending, Shortlisted, Selected, and Rejected stages.
+            </p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon" aria-hidden="true">⚙️</div>
+            <h3>Placement Management</h3>
+            <p>
+                Dedicated admin portal to post vacancies, evaluate candidate resumes, and coordinate campus recruitment rounds.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Job Openings Preview -->
+{% if recent_jobs %}
+<section class="container" style="padding-top: 24px;">
+    <div class="section-header">
+        <h2>Latest Opportunities</h2>
+        <p>Top on-campus & off-campus hiring drives currently accepting applications</p>
+    </div>
+
+    <div class="jobs-grid">
+        {% for job in recent_jobs %}
+            <article class="job-card">
+                <span class="job-badge-active">Active</span>
+                <div>
+                    <div class="job-company">{{ job.company_name }}</div>
+                    <h3 class="job-title">{{ job.job_title }}</h3>
+
+                    <div class="job-meta-list">
+                        <div class="job-meta-item">📍 {{ job.location }}</div>
+                        {% if job.salary %}
+                            <div class="job-meta-item">💰 {{ job.salary }}</div>
+                        {% endif %}
+                        <div class="job-meta-item">⏳ Deadline: {{ job.application_deadline }}</div>
+                    </div>
+
+                    <div class="job-tags">
+                        {% for skill in job.required_skills.split(',') %}
+                            <span class="skill-tag">{{ skill.strip() }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="job-footer">
+                    <a href="{{ url_for('job_details', job_id=job.id) }}" class="btn btn-secondary btn-sm">View Details</a>
+                    {% if session.get('role') == 'student' %}
+                        <a href="{{ url_for('job_details', job_id=job.id) }}" class="btn btn-primary btn-sm">Apply Now</a>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-primary btn-sm">Login to Apply</a>
+                    {% endif %}
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+
+    <div style="text-align: center; margin-top: 36px;">
+        <a href="{{ url_for('jobs') }}" class="btn btn-primary btn-lg">Browse All Jobs &rarr;</a>
+    </div>
+</section>
+{% endif %}
+{% endblock %}
+

@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard | Smart Campus Placement{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 28px;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; color: var(--primary-900);">Placement Cell Administration</h1>
+            <p style="color: var(--slate-600);">Monitor campus recruitment drives, evaluate candidate resumes, and manage hiring statuses</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <a href="{{ url_for('manage_jobs') }}#add-job" class="btn btn-primary">+ Post New Job</a>
+            <a href="{{ url_for('admin_applications') }}" class="btn btn-secondary">Review Applications</a>
+        </div>
+    </div>
+
+    <!-- Metrics Cards -->
+    <div class="dashboard-metrics">
+        <div class="metric-card">
+            <div class="metric-icon metric-blue">👥</div>
+            <div>
+                <div class="metric-value">{{ stats.total_students | default(0) }}</div>
+                <div class="metric-title">Registered Students</div>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon metric-emerald">💼</div>
+            <div>
+                <div class="metric-value">{{ stats.active_jobs | default(0) }} / {{ stats.total_jobs | default(0) }}</div>
+                <div class="metric-title">Active / Total Drives</div>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon metric-amber">📑</div>
+            <div>
+                <div class="metric-value">{{ stats.total_applications | default(0) }}</div>
+                <div class="metric-title">Total Applications</div>
+            </div>
+        </div>
+
+        <div class="metric-card">
+            <div class="metric-icon metric-emerald">🏆</div>
+            <div>
+                <div class="metric-value">{{ stats.selected_count | default(0) }}</div>
+                <div class="metric-title">Offers Selected</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Candidate Applications with In-Place Status Updating -->
+    <div class="card" style="margin-bottom: 36px;">
+        <div class="card-header">
+            <div>
+                <h2 class="card-title">Recent Candidate Applications</h2>
+                <span style="font-size: 0.85rem; color: var(--slate-500);">Review and update interview candidate stages</span>
+            </div>
+            <a href="{{ url_for('admin_applications') }}" class="btn btn-secondary btn-sm">View All Applications &rarr;</a>
+        </div>
+
+        {% if recent_applications %}
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Student Candidate</th>
+                            <th>College & Branch</th>
+                            <th>Applied Job</th>
+                            <th>Resume</th>
+                            <th>Applied At</th>
+                            <th>Current Status</th>
+                            <th>Update Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in recent_applications %}
+                            <tr>
+                                <td>
+                                    <strong>{{ app.student_name }}</strong>
+                                    <div style="font-size: 0.8rem; color: var(--slate-500);">{{ app.student_email }}</div>
+                                </td>
+                                <td>
+                                    <div>{{ app.college_name }}</div>
+                                    <div style="font-size: 0.8rem; color: var(--slate-500);">{{ app.department }}</div>
+                                </td>
+                                <td>
+                                    <strong>{{ app.company_name }}</strong>
+                                    <div style="font-size: 0.8rem; color: var(--slate-600);">{{ app.job_title }}</div>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('view_resume', filename=app.resume_filename) }}" target="_blank" class="btn btn-secondary btn-sm">
+                                        📄 View PDF
+                                    </a>
+                                </td>
+                                <td>{{ app.applied_at.strftime('%d %b %Y') if app.applied_at else 'Recent' }}</td>
+                                <td>
+                                    <span class="badge badge-{{ app.application_status.lower() }}">
+                                        {{ app.application_status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <form action="{{ url_for('update_application_status', app_id=app.id) }}" method="POST" style="display: flex; gap: 6px;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <select name="status" class="form-control" style="padding: 4px 8px; font-size: 0.85rem; width: auto;">
+                                            <option value="Pending" {% if app.application_status == 'Pending' %}selected{% endif %}>Pending</option>
+                                            <option value="Shortlisted" {% if app.application_status == 'Shortlisted' %}selected{% endif %}>Shortlisted</option>
+                                            <option value="Selected" {% if app.application_status == 'Selected' %}selected{% endif %}>Selected</option>
+                                            <option value="Rejected" {% if app.application_status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <h3>No Applications Yet</h3>
+                <p>When students submit applications for open drives, they will appear here for review.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Active Drives Overview -->
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-title">Campus Job Drives</h2>
+            <a href="{{ url_for('manage_jobs') }}" class="btn btn-secondary btn-sm">Manage All Drives &rarr;</a>
+        </div>
+
+        {% if recent_jobs %}
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Role Title</th>
+                            <th>Location</th>
+                            <th>Deadline</th>
+                            <th>Status</th>
+                            <th>Applications</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for job in recent_jobs %}
+                            <tr>
+                                <td><strong>{{ job.company_name }}</strong></td>
+                                <td>{{ job.job_title }}</td>
+                                <td>{{ job.location }}</td>
+                                <td>{{ job.application_deadline }}</td>
+                                <td>
+                                    <span class="badge badge-{{ 'active' if job.status == 'Active' else 'inactive' }}">
+                                        {{ job.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span style="font-weight: 700;">{{ job.application_count | default(0) }}</span> applicants
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('admin_applications') }}?job_id={{ job.id }}" class="btn btn-secondary btn-sm">View Applicants</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <p>No job postings have been created yet.</p>
+                <a href="{{ url_for('manage_jobs') }}#add-job" class="btn btn-primary btn-sm">Create First Job</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

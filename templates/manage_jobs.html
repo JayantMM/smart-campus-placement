@@ -1,0 +1,231 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Campus Jobs | Smart Campus Placement{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 28px;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; color: var(--primary-900);">Manage Job Drives</h1>
+            <p style="color: var(--slate-600);">Create new recruitment vacancies, edit existing requirements, or toggle drive statuses</p>
+        </div>
+        <a href="#add-job" class="btn btn-primary">+ Post New Opening</a>
+    </div>
+
+    <!-- Existing Jobs Table -->
+    <div class="card" style="margin-bottom: 40px; padding: 0; overflow: hidden;">
+        <div class="card-header" style="padding: 20px 24px; margin-bottom: 0;">
+            <h2 class="card-title">All Campus Job Drives ({{ jobs|length }})</h2>
+        </div>
+
+        {% if jobs %}
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Company & Role</th>
+                            <th>Location & CTC</th>
+                            <th>Eligibility & Skills</th>
+                            <th>Deadline</th>
+                            <th>Status</th>
+                            <th>Applicants</th>
+                            <th style="text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for j in jobs %}
+                            <tr>
+                                <td>
+                                    <strong>{{ j.company_name }}</strong>
+                                    <div style="color: var(--slate-700); font-weight: 600;">{{ j.job_title }}</div>
+                                </td>
+                                <td>
+                                    <div>📍 {{ j.location }}</div>
+                                    {% if j.salary %}<div style="color: var(--accent-emerald); font-weight: 600;">💰 {{ j.salary }}</div>{% endif %}
+                                </td>
+                                <td>
+                                    <div style="font-size: 0.85rem; max-width: 250px;">{{ j.eligibility }}</div>
+                                    <div style="font-size: 0.8rem; color: var(--slate-500); margin-top: 4px;">{{ j.required_skills }}</div>
+                                </td>
+                                <td>{{ j.application_deadline }}</td>
+                                <td>
+                                    <span class="badge badge-{{ 'active' if j.status == 'Active' else 'inactive' }}">
+                                        {{ j.status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('admin_applications') }}?job_id={{ j.id }}" style="font-weight: 700;">
+                                        {{ j.application_count | default(0) }} applicants
+                                    </a>
+                                </td>
+                                <td style="text-align: right; white-space: nowrap;">
+                                    <div style="display: inline-flex; gap: 6px;">
+                                        <!-- Toggle Status -->
+                                        <form action="{{ url_for('toggle_job_status', job_id=j.id) }}" method="POST">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn btn-sm btn-secondary" title="Toggle active/inactive status">
+                                                {{ 'Deactivate' if j.status == 'Active' else 'Activate' }}
+                                            </button>
+                                        </form>
+
+                                        <!-- Edit button triggers pre-fill -->
+                                        <a href="{{ url_for('edit_job', job_id=j.id) }}" class="btn btn-sm btn-primary">Edit</a>
+
+                                        <!-- Delete Job -->
+                                        <form action="{{ url_for('delete_job', job_id=j.id) }}" method="POST" data-confirm="Are you sure you want to delete this job drive? All associated student applications will be permanently removed.">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">💼</div>
+                <h3>No Job Postings Yet</h3>
+                <p>Use the form below to create your campus placement drive's first job opening.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Create / Edit Job Form -->
+    <div class="card" id="add-job">
+        <div class="card-header">
+            <h2 class="card-title">{% if edit_job %}Edit Job: {{ edit_job.job_title }}{% else %}Post a New Job Opportunity{% endif %}</h2>
+        </div>
+
+        <form action="{% if edit_job %}{{ url_for('edit_job', job_id=edit_job.id) }}{% else %}{{ url_for('create_job') }}{% endif %}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="form-group">
+                    <label for="company_name">Company Name <span style="color: var(--accent-rose);">*</span></label>
+                    <input
+                        type="text"
+                        id="company_name"
+                        name="company_name"
+                        class="form-control"
+                        placeholder="e.g. Apex Cloud Systems"
+                        required
+                        value="{{ edit_job.company_name if edit_job else '' }}"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="job_title">Job Role / Designation <span style="color: var(--accent-rose);">*</span></label>
+                    <input
+                        type="text"
+                        id="job_title"
+                        name="job_title"
+                        class="form-control"
+                        placeholder="e.g. Associate Software Engineer"
+                        required
+                        value="{{ edit_job.job_title if edit_job else '' }}"
+                    >
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Job Description & Responsibilities <span style="color: var(--accent-rose);">*</span></label>
+                <textarea
+                    id="description"
+                    name="description"
+                    class="form-control"
+                    rows="5"
+                    placeholder="Describe role responsibilities, day-to-day work, training opportunities..."
+                    required
+                >{{ edit_job.description if edit_job else '' }}</textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="form-group">
+                    <label for="required_skills">Required Skills (Comma separated) <span style="color: var(--accent-rose);">*</span></label>
+                    <input
+                        type="text"
+                        id="required_skills"
+                        name="required_skills"
+                        class="form-control"
+                        placeholder="e.g. Python, Flask, MySQL, Git"
+                        required
+                        value="{{ edit_job.required_skills if edit_job else '' }}"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="eligibility">Eligibility Criteria <span style="color: var(--accent-rose);">*</span></label>
+                    <input
+                        type="text"
+                        id="eligibility"
+                        name="eligibility"
+                        class="form-control"
+                        placeholder="e.g. B.Tech CS/IT with min 65% or 6.5 CGPA"
+                        required
+                        value="{{ edit_job.eligibility if edit_job else '' }}"
+                    >
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr 0.8fr; gap: 16px;">
+                <div class="form-group">
+                    <label for="location">Location / Work Mode <span style="color: var(--accent-rose);">*</span></label>
+                    <input
+                        type="text"
+                        id="location"
+                        name="location"
+                        class="form-control"
+                        placeholder="e.g. Bangalore / Remote"
+                        required
+                        value="{{ edit_job.location if edit_job else '' }}"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="salary">Salary / Package (LPA)</label>
+                    <input
+                        type="text"
+                        id="salary"
+                        name="salary"
+                        class="form-control"
+                        placeholder="e.g. ₹6.5 - ₹8.5 LPA"
+                        value="{{ edit_job.salary if edit_job and edit_job.salary else '' }}"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="application_deadline">Deadline Date <span style="color: var(--accent-rose);">*</span></label>
+                    <input
+                        type="date"
+                        id="application_deadline"
+                        name="application_deadline"
+                        class="form-control"
+                        required
+                        value="{{ edit_job.application_deadline if edit_job else '' }}"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="status">Drive Status</label>
+                    <select id="status" name="status" class="form-control">
+                        <option value="Active" {% if not edit_job or edit_job.status == 'Active' %}selected{% endif %}>Active</option>
+                        <option value="Inactive" {% if edit_job and edit_job.status == 'Inactive' %}selected{% endif %}>Inactive</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-top: 16px; display: flex; gap: 12px;">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    {% if edit_job %}Update Job Posting{% else %}Publish Job Opening{% endif %}
+                </button>
+                {% if edit_job %}
+                    <a href="{{ url_for('manage_jobs') }}" class="btn btn-secondary btn-lg">Cancel Edit</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

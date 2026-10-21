@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}My Submitted Applications | Smart Campus Placement{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 28px;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; color: var(--primary-900);">My Applications</h1>
+            <p style="color: var(--slate-600);">Track your submitted applications and interview selection stages</p>
+        </div>
+        <a href="{{ url_for('jobs') }}" class="btn btn-primary">Browse More Jobs</a>
+    </div>
+
+    {% if applications %}
+        <div class="card" style="padding: 0; overflow: hidden;">
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Company</th>
+                            <th>Job Role</th>
+                            <th>Location</th>
+                            <th>Applied On</th>
+                            <th>Status</th>
+                            <th>Resume Submitted</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in applications %}
+                            <tr>
+                                <td>
+                                    <strong>{{ app.company_name }}</strong>
+                                </td>
+                                <td>
+                                    <div style="font-weight: 600; color: var(--slate-800);">{{ app.job_title }}</div>
+                                    {% if app.salary %}<div style="font-size: 0.8rem; color: var(--slate-500);">{{ app.salary }}</div>{% endif %}
+                                </td>
+                                <td>📍 {{ app.location }}</td>
+                                <td>{{ app.applied_at.strftime('%d %b %Y, %I:%M %p') if app.applied_at else 'Recent' }}</td>
+                                <td>
+                                    <span class="badge badge-{{ app.application_status.lower() }}">
+                                        {{ app.application_status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('view_resume', filename=app.resume_filename) }}" target="_blank" class="btn btn-secondary btn-sm" title="View submitted resume">
+                                        📄 View Resume
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('job_details', job_id=app.job_id) }}" class="btn btn-secondary btn-sm">Job Details</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">📁</div>
+            <h3>No Applications Yet</h3>
+            <p>You have not submitted any applications. Search and apply for active campus placement opportunities to begin your career journey.</p>
+            <a href="{{ url_for('jobs') }}" class="btn btn-primary">Explore Active Drives</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+

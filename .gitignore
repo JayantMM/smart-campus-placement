@@ -1,0 +1,26 @@
+# Python virtual environment
+.venv/
+env/
+venv/
+ENV/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment configuration secrets
+.env
+
+# Uploaded candidate resumes (keep directory structure)
+uploads/resumes/*
+!uploads/resumes/.gitkeep
+
+# VS Code directory
+.vscode/
+
+# Operating system files
+Thumbs.db
+Desktop.ini
+.DS_Store
+

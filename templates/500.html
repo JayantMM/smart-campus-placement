@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}500 - Server Error | Smart Campus Placement{% endblock %}
+
+{% block content %}
+<div class="container" style="text-align: center; padding: 60px 20px;">
+    <div style="font-size: 5rem; font-weight: 900; color: var(--accent-rose); line-height: 1; margin-bottom: 16px;">
+        500
+    </div>
+    <h1 style="font-size: 2rem; font-weight: 800; color: var(--slate-900); margin-bottom: 12px;">
+        System Error
+    </h1>
+    <p style="color: var(--slate-600); max-width: 500px; margin: 0 auto 32px auto; font-size: 1.1rem;">
+        An unexpected error occurred while processing your request. If this is a database error, please ensure MySQL is running in your XAMPP Control Panel.
+    </p>
+
+    <div style="display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;">
+        <a href="{{ url_for('home') }}" class="btn btn-primary btn-lg">Back to Safe Ground</a>
+        <a href="{{ url_for('jobs') }}" class="btn btn-secondary btn-lg">View Open Drives</a>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Student Applications | Smart Campus Placement{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+        <div>
+            <h1 style="font-size: 2rem; font-weight: 800; color: var(--primary-900);">Job Applications Review</h1>
+            <p style="color: var(--slate-600);">Screen student candidate submissions, download resumes, and assign recruitment round decisions</p>
+        </div>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">&larr; Back to Dashboard</a>
+    </div>
+
+    <!-- Filter Card -->
+    <div class="search-filter-card">
+        <form action="{{ url_for('admin_applications') }}" method="GET" class="filter-grid">
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="job_id">Filter by Job Drive</label>
+                <select id="job_id" name="job_id" class="form-control">
+                    <option value="">All Job Drives</option>
+                    {% for j in all_jobs %}
+                        <option value="{{ j.id }}" {% if selected_job_id == j.id|string %}selected{% endif %}>
+                            {{ j.company_name }} - {{ j.job_title }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="status">Filter by Status</label>
+                <select id="status" name="status" class="form-control">
+                    <option value="">All Statuses</option>
+                    <option value="Pending" {% if selected_status == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="Shortlisted" {% if selected_status == 'Shortlisted' %}selected{% endif %}>Shortlisted</option>
+                    <option value="Selected" {% if selected_status == 'Selected' %}selected{% endif %}>Selected</option>
+                    <option value="Rejected" {% if selected_status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0;">
+                <label for="q">Search Candidate</label>
+                <input
+                    type="text"
+                    id="q"
+                    name="q"
+                    class="form-control"
+                    placeholder="Candidate name or email..."
+                    value="{{ query | default('') }}"
+                >
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+                <button type="submit" class="btn btn-primary" style="height: 42px;">Filter</button>
+                {% if selected_job_id or selected_status or query %}
+                    <a href="{{ url_for('admin_applications') }}" class="btn btn-secondary" style="height: 42px;">Reset</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Applications Table -->
+    <div class="card" style="padding: 0; overflow: hidden;">
+        <div class="card-header" style="padding: 18px 24px; margin-bottom: 0;">
+            <h2 class="card-title">Candidate Submissions ({{ applications|length }})</h2>
+        </div>
+
+        {% if applications %}
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Student Details</th>
+                            <th>College & Branch</th>
+                            <th>Company & Job Role</th>
+                            <th>Resume & Cover Letter</th>
+                            <th>Submitted On</th>
+                            <th>Status Badge</th>
+                            <th>Change Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in applications %}
+                            <tr>
+                                <td>
+                                    <strong>{{ app.student_name }}</strong>
+                                    <div style="font-size: 0.8rem; color: var(--slate-600);">{{ app.student_email }}</div>
+                                </td>
+                                <td>
+                                    <div>{{ app.college_name }}</div>
+                                    <div style="font-size: 0.8rem; color: var(--slate-500);">{{ app.department }}</div>
+                                </td>
+                                <td>
+                                    <strong>{{ app.company_name }}</strong>
+                                    <div style="font-size: 0.85rem; color: var(--slate-600);">{{ app.job_title }}</div>
+                                </td>
+                                <td>
+                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                        <a href="{{ url_for('view_resume', filename=app.resume_filename) }}" target="_blank" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 4px;">
+                                            📄 View Resume
+                                        </a>
+                                        {% if app.cover_letter %}
+                                            <details style="font-size: 0.8rem; margin-top: 4px; color: var(--slate-600);">
+                                                <summary style="cursor: pointer; color: var(--primary-600); font-weight: 600;">Cover Letter</summary>
+                                                <div style="margin-top: 4px; padding: 8px; background: var(--slate-100); border-radius: var(--radius-sm); max-width: 260px; white-space: pre-wrap;">
+                                                    {{ app.cover_letter }}
+                                                </div>
+                                            </details>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>{{ app.applied_at.strftime('%d %b %Y, %I:%M %p') if app.applied_at else 'Recent' }}</td>
+                                <td>
+                                    <span class="badge badge-{{ app.application_status.lower() }}">
+                                        {{ app.application_status }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <form action="{{ url_for('update_application_status', app_id=app.id) }}" method="POST" style="display: flex; gap: 6px;">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <select name="status" class="form-control" style="padding: 4px 8px; font-size: 0.85rem; width: auto;">
+                                            <option value="Pending" {% if app.application_status == 'Pending' %}selected{% endif %}>Pending</option>
+                                            <option value="Shortlisted" {% if app.application_status == 'Shortlisted' %}selected{% endif %}>Shortlisted</option>
+                                            <option value="Selected" {% if app.application_status == 'Selected' %}selected{% endif %}>Selected</option>
+                                            <option value="Rejected" {% if app.application_status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                                        </select>
+                                        <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📭</div>
+                <h3>No Applications Match Filter Criteria</h3>
+                <p>Try clearing your status filter or selecting another job drive.</p>
+                <a href="{{ url_for('admin_applications') }}" class="btn btn-primary btn-sm">Reset All Filters</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

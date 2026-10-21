@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart Campus Placement Management System{% endblock %}</title>
+
+    <!-- Google Font & Core Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <header class="site-header">
+        <nav class="navbar" aria-label="Main Navigation">
+            <a href="{{ url_for('home') }}" class="brand-link">
+                <span class="brand-icon" aria-hidden="true">🎓</span>
+                <span>Smart Campus Placement</span>
+                <span class="brand-badge">Portal</span>
+            </a>
+
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation menu" aria-expanded="false">
+                ☰
+            </button>
+
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="{{ url_for('home') }}" class="nav-link {% if request.path == '/' %}active{% endif %}">Home</a></li>
+                <li><a href="{{ url_for('jobs') }}" class="nav-link {% if request.path.startswith('/jobs') and not request.path.startswith('/admin') %}active{% endif %}">Jobs</a></li>
+
+                {% if session.get('role') == 'student' %}
+                    <li><a href="{{ url_for('student_dashboard') }}" class="nav-link {% if request.path == '/student/dashboard' %}active{% endif %}">Dashboard</a></li>
+                    <li><a href="{{ url_for('student_applications') }}" class="nav-link {% if request.path == '/student/applications' %}active{% endif %}">My Applications</a></li>
+                    <li><a href="{{ url_for('student_profile') }}" class="nav-link {% if request.path == '/student/profile' %}active{% endif %}">Profile</a></li>
+                    <li class="nav-user">
+                        <span>👤 {{ session.get('user_name', 'Student') }}</span>
+                    </li>
+                    <li><a href="{{ url_for('logout') }}" class="nav-link">Logout</a></li>
+
+                {% elif session.get('role') == 'admin' %}
+                    <li><a href="{{ url_for('admin_dashboard') }}" class="nav-link {% if request.path == '/admin/dashboard' %}active{% endif %}">Dashboard</a></li>
+                    <li><a href="{{ url_for('manage_jobs') }}" class="nav-link {% if request.path == '/admin/jobs' %}active{% endif %}">Manage Jobs</a></li>
+                    <li><a href="{{ url_for('admin_applications') }}" class="nav-link {% if request.path == '/admin/applications' %}active{% endif %}">Applications</a></li>
+                    <li><a href="{{ url_for('admin_students') }}" class="nav-link {% if request.path == '/admin/students' %}active{% endif %}">Students</a></li>
+                    <li class="nav-user">
+                        <span>🛡️ Admin ({{ session.get('admin_username', 'admin') }})</span>
+                    </li>
+                    <li><a href="{{ url_for('logout') }}" class="nav-link">Logout</a></li>
+
+                {% else %}
+                    <li><a href="{{ url_for('register') }}" class="nav-link {% if request.path == '/register' %}active{% endif %}">Register</a></li>
+                    <li><a href="{{ url_for('login') }}" class="nav-link nav-cta {% if request.path == '/login' %}active{% endif %}">Login</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Flash Messages Container -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }}" role="alert">
+                        <span>{{ message }}</span>
+                        <button type="button" class="alert-close" aria-label="Close notification">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Professional Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>Smart Campus Placement</h4>
+                    <p>
+                        A comprehensive, modern campus placement management platform connecting aspiring students with industry-leading companies. Simplify career opportunities, job applications, and placement workflows.
+                    </p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="{{ url_for('home') }}">Home</a></li>
+                        <li><a href="{{ url_for('jobs') }}">Explore Opportunities</a></li>
+                        <li><a href="{{ url_for('register') }}">Student Registration</a></li>
+                        <li><a href="{{ url_for('login') }}">Portal Login</a></li>
+                        <li><a href="{{ url_for('admin_login') }}">Admin Access</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Training & Placement Cell</h4>
+                    <p><strong>Campus Drive Desk:</strong> Career Development Center</p>
+                    <p><strong>Email:</strong> placements@campus.edu</p>
+                    <p><strong>Support Hours:</strong> Mon - Fri, 9:00 AM - 5:00 PM</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; {{ current_year | default(2026) }} Smart Campus Placement Management System. Designed for college project demonstration.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Client-side JavaScript -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
+

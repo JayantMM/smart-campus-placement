@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Administrator Login | Smart Campus Placement{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-box">
+        <div class="form-header">
+            <div style="font-size: 2.2rem; margin-bottom: 8px;">🛡️</div>
+            <h2>Admin Portal Login</h2>
+            <p>Placement Coordinators & Administrative Staff</p>
+        </div>
+
+        <form action="{{ url_for('admin_login') }}" method="POST" novalidate>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <div class="form-group">
+                <label for="username">Username <span style="color: var(--accent-rose);">*</span></label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    class="form-control"
+                    placeholder="e.g. admin"
+                    autocomplete="username"
+                    required
+                    value="{{ username if username else '' }}"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Admin Password <span style="color: var(--accent-rose);">*</span></label>
+                <div class="password-wrapper">
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="form-control"
+                        placeholder="Enter admin password"
+                        autocomplete="current-password"
+                        required
+                    >
+                    <button type="button" class="password-toggle-btn" data-target="password">Show</button>
+                </div>
+            </div>
+
+            <div style="margin-top: 24px;">
+                <button type="submit" class="btn btn-primary btn-block btn-lg">Sign In to Admin Portal</button>
+            </div>
+        </form>
+
+        <div style="margin-top: 20px; background: var(--primary-50); border: 1px solid var(--primary-100); border-radius: var(--radius-sm); padding: 12px; font-size: 0.85rem; color: var(--primary-800);">
+            <strong>Demo Admin Credentials:</strong><br>
+            Username: <code>admin</code><br>
+            Password: <code>Admin@12345</code>
+        </div>
+
+        <div style="text-align: center; margin-top: 20px; font-size: 0.95rem;">
+            Student? <a href="{{ url_for('login') }}" style="font-weight: 600;">Student Login &rarr;</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
