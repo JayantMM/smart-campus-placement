@@ -1,39 +1,65 @@
 # 🎓 Smart Campus Placement Management System
 
-A full-stack, responsive, and secure **Smart Campus Placement Management System** built with **Python Flask**, **MySQL**, **HTML5**, **CSS3**, and **JavaScript**.
+A full-stack, responsive, and secure **Smart Campus Placement Management
+System** built with **Python Flask**, **MySQL**, **HTML5**, **CSS3**,
+and **JavaScript**.
 
-Designed specifically for college campus recruitment drives, allowing students to discover jobs, upload resumes, and track their selection status while giving placement coordinators full administrative oversight.
+Designed specifically for college campus recruitment drives, allowing
+students to discover jobs, upload resumes, and track their selection
+status while giving placement coordinators full administrative
+oversight.
 
----
+------------------------------------------------------------------------
 
 ## 🌟 Key Features
 
 ### For Students
-- **Candidate Registration & Login:** Safe authentication using Werkzeug password hashing.
-- **Searchable Job Openings:** Filter by keyword, company name, location, and required technical skills.
-- **Job Details & Deadlines:** Full role overview, package details, eligibility criteria, and deadline tracking.
-- **Easy Online Application:** Secure resume upload (PDF/DOC/DOCX, up to 5MB) with optional cover letter.
-- **Application Tracking:** Track application stages in real-time (`Pending`, `Shortlisted`, `Selected`, `Rejected`).
-- **Profile Management:** Update academic information, college, branch, and change account passwords.
+
+-   **Candidate Registration & Login:** Safe authentication using
+    Werkzeug password hashing.
+-   **Searchable Job Openings:** Filter by keyword, company name,
+    location, and required technical skills.
+-   **Job Details & Deadlines:** Full role overview, package details,
+    eligibility criteria, and deadline tracking.
+-   **Easy Online Application:** Secure resume upload (PDF/DOC/DOCX, up
+    to 5MB) with optional cover letter.
+-   **Application Tracking:** Track application stages in real-time
+    (`Pending`, `Shortlisted`, `Selected`, `Rejected`).
+-   **Profile Management:** Update academic information, college,
+    branch, and change account passwords.
 
 ### For Placement Officers & Administrators
-- **Executive Dashboard:** Live metrics for total students, active job postings, total applications, and placed students.
-- **Job Posting Management:** Create, update, toggle status (`Active` / `Inactive`), or remove job postings.
-- **Candidate Screening:** Screen candidate applications by job and status, view cover letters, and download submitted resumes.
-- **Application Status Updates:** Update candidate stages directly with immediate feedback.
-- **Student Directory:** Search and browse registered students and view their total application count.
+
+-   **Executive Dashboard:** Live metrics for total students, active job
+    postings, total applications, and placed students.
+-   **Job Posting Management:** Create, update, toggle status (`Active`
+    / `Inactive`), or remove job postings.
+-   **Candidate Screening:** Screen candidate applications by job and
+    status, view cover letters, and download submitted resumes.
+-   **Application Status Updates:** Update candidate stages directly
+    with immediate feedback.
+-   **Student Directory:** Search and browse registered students and
+    view their total application count.
 
 ### Security & Robustness
-- **Password Protection:** Passwords securely hashed with `werkzeug.security` (scrypt / pbkdf2:sha256). Plaintext passwords are never saved.
-- **SQL Injection Prevention:** All database operations utilize parameterized queries with `mysql-connector-python`.
-- **Session & CSRF Protection:** Cryptographic CSRF tokens embedded in all forms and validated on every state-changing POST request.
-- **Secure File Storage:** Unique filename generation with timestamps and extension whitelisting (`.pdf`, `.doc`, `.docx`).
-- **Access Control:** Role-based decorators (`@student_required`, `@admin_required`) protect student and admin sections.
 
----
+-   **Password Protection:** Passwords securely hashed with
+    `werkzeug.security` (scrypt / pbkdf2:sha256). Plaintext passwords
+    are never saved.
+-   **SQL Injection Prevention:** All database operations utilize
+    parameterized queries with `mysql-connector-python`.
+-   **Session & CSRF Protection:** Cryptographic CSRF tokens embedded in
+    all forms and validated on every state-changing POST request.
+-   **Secure File Storage:** Unique filename generation with timestamps
+    and extension whitelisting (`.pdf`, `.doc`, `.docx`).
+-   **Access Control:** Role-based decorators (`@student_required`,
+    `@admin_required`) protect student and admin sections.
+
+------------------------------------------------------------------------
 
 ## 📁 Project Architecture
 
+``` text
 smart-campus-placement/
 │
 ├── app.py
@@ -76,77 +102,92 @@ smart-campus-placement/
 └── uploads/
     └── resumes/
         └── .gitkeep
+```
 
----
+------------------------------------------------------------------------
 
 ## 🚀 Getting Started (Beginner-Friendly Windows Setup)
 
 Follow these steps to run the project in **VS Code on Windows**:
 
 ### Step 1: Start MySQL in XAMPP
-1. Open the **XAMPP Control Panel** on your computer.
-2. In the **MySQL** row, click the **Start** button.
-3. Confirm that the status background turns green and port `3306` is displayed.
 
-> **Note on XAMPP Defaults:** By default, XAMPP uses username `root` with no password (`""`), which matches the project's default `.env` configuration.
+1.  Open the **XAMPP Control Panel** on your computer.
+2.  In the **MySQL** row, click the **Start** button.
+3.  Confirm that the status background turns green and port `3306` is
+    displayed.
 
----
+> **Note on XAMPP Defaults:** By default, XAMPP uses username `root`
+> with no password (`""`), which matches the project's default `.env`
+> configuration.
+
+------------------------------------------------------------------------
 
 ### Step 2: Import the Database Schema
-Open **PowerShell** in the project folder (`D:\smart campus placement`) and run:
 
-```powershell
+Open **PowerShell** in the project folder (`D:\smart campus placement`)
+and run:
+
+``` powershell
 C:\xampp\mysql\bin\mysql.exe -u root -e "source D:/smart campus placement/database/schema.sql"
 ```
 
-*Alternatively, you can open **phpMyAdmin** in your browser (`http://localhost/phpmyadmin`), click **Import**, select `database/schema.sql`, and click **Go**.*
+*Alternatively, you can open **phpMyAdmin** in your browser
+(`http://localhost/phpmyadmin`), click **Import**, select
+`database/schema.sql`, and click **Go**.*
 
-This command creates the database `smart_campus_placement`, initializes all 4 tables (`students`, `admins`, `jobs`, `applications`), and loads realistic demo job listings.
+This command creates the database `smart_campus_placement`, initializes
+all 4 tables (`students`, `admins`, `jobs`, `applications`), and loads
+realistic demo job listings.
 
----
+------------------------------------------------------------------------
 
 ### Step 3: Activate the Virtual Environment & Verify Dependencies
 
 In your VS Code terminal (PowerShell), activate the virtual environment:
 
-```powershell
+``` powershell
 .\.venv\Scripts\Activate.ps1
 ```
 
 If you ever need to install or update dependencies:
 
-```powershell
+``` powershell
 pip install -r requirements.txt
 ```
 
----
+------------------------------------------------------------------------
 
 ### Step 4: Initialize the Admin Account
 
 Run the administrator initialization script from your project directory:
 
+``` powershell
 python init_admin.py
+```
 
-For security, configure a unique administrator username and password. Do not use default or publicly shared credentials.
+Follow the instructions printed by the script. Use a unique
+administrator username and a strong password. Do not use default or
+publicly shared credentials. The exact options supported by this script
+depend on its implementation; do not add username/password arguments
+unless `init_admin.py` explicitly supports them.
 
-To provide custom credentials, use:
+Keep administrator credentials private and never commit them to the
+public repository.
 
-python init_admin.py <your_username> <your_password>
-
-Keep administrator credentials private and never commit them to the public repository.
-
----
+------------------------------------------------------------------------
 
 ### Step 5: Start the Flask Application
 
 Run:
 
-```powershell
+``` powershell
 python app.py
 ```
 
 You will see:
-```text
+
+``` text
  * Serving Flask app 'app'
  * Debug mode: on
  * Running on http://127.0.0.1:5000
@@ -154,49 +195,95 @@ You will see:
 
 Open your browser and navigate to:
 
-👉 **[http://127.0.0.1:5000](http://127.0.0.1:5000)**
+👉 **<http://127.0.0.1:5000>**
 
----
+------------------------------------------------------------------------
 
 ## 🧪 Testing Checklist
 
-You can verify all major features using the automated test suite or through the browser:
+You can verify all major features using the automated test suite or
+through the browser:
 
 ### Option A: Run Automated Tests
+
 In your terminal, execute:
 
-```powershell
+``` powershell
 python test_app.py
 ```
 
-This tests 100% of all public routes, static CSS/JS delivery, student registration, login, resume uploads, duplicate prevention, and admin workflows automatically.
+This runs the project's integration checks for the routes and workflows
+covered by `test_app.py`. Review the terminal output to see which checks
+passed.
 
----
+------------------------------------------------------------------------
 
 ### Option B: Manual Browser Testing
 
-| Feature | Steps to Test | Expected Outcome |
-| :--- | :--- | :--- |
-| **1. Home Page** | Visit `http://127.0.0.1:5000` | Displays hero section, database statistics, feature cards, and latest jobs. |
-| **2. Search Jobs** | Click **Jobs** in navbar, enter "Python" in keyword search | Filters active jobs matching the query in real-time. |
-| **3. Student Registration** | Click **Register**, fill in details, submit | Account is created, password is securely hashed, redirects to Login. |
-| **4. Student Login** | Login with your registered email and password | Redirects to Student Dashboard with personalized greeting and statistics. |
-| **5. Job Application** | Navigate to a job detail page, upload a PDF resume, click **Submit Application** | Application is saved, status set to "Pending", redirects to My Applications. |
-| **6. Prevent Duplicate** | Return to the same job detail page | Shows "Your Application Status: Pending" and hides the application form. |
-| **7. Admin Login** | Click **Login** &rarr; **Admin Login** (or visit `/admin/login`), enter `admin` / `Admin@12345` | Accesses Administrator Dashboard with full system metrics. |
-| **8. Status Update** | Go to **Applications**, change candidate status to `Shortlisted`, click **Save** | Status changes to Shortlisted with instant green badge. |
-| **9. Post New Job** | In Admin, go to **Manage Jobs**, fill form, click **Publish** | New job drive becomes immediately visible on public Jobs page. |
-| **10. Responsive UI** | Resize your browser window to mobile width | Mobile hamburger toggle menu appears and operates smoothly. |
+  -------------------------------------------------------------------------
+  Feature                 Steps to Test             Expected Outcome
+  ----------------------- ------------------------- -----------------------
+  **1. Home Page**        Visit                     Displays hero section,
+                          `http://127.0.0.1:5000`   database statistics,
+                                                    feature cards, and
+                                                    latest jobs.
 
----
+  **2. Search Jobs**      Click **Jobs** in navbar, Filters active jobs
+                          enter "Python" in keyword matching the query in
+                          search                    real-time.
+
+  **3. Student            Click **Register**, fill  Account is created,
+  Registration**          in details, submit        password is securely
+                                                    hashed, redirects to
+                                                    Login.
+
+  **4. Student Login**    Login with your           Redirects to Student
+                          registered email and      Dashboard with
+                          password                  personalized greeting
+                                                    and statistics.
+
+  **5. Job Application**  Navigate to a job detail  Application is saved,
+                          page, upload a PDF        status set to
+                          resume, click **Submit    "Pending", redirects to
+                          Application**             My Applications.
+
+  **6. Prevent            Return to the same job    Shows "Your Application
+  Duplicate**             detail page               Status: Pending" and
+                                                    hides the application
+                                                    form.
+
+  **7. Admin Login**      Click **Login** → **Admin Opens the Administrator
+                          Login** (or visit         Dashboard if the
+                          `/admin/login`), then     credentials are valid.
+                          enter the administrator   
+                          credentials you           
+                          configured locally.       
+
+  **8. Status Update**    Go to **Applications**,   Status changes to
+                          change candidate status   Shortlisted with
+                          to `Shortlisted`, click   instant green badge.
+                          **Save**                  
+
+  **9. Post New Job**     In Admin, go to **Manage  New job drive becomes
+                          Jobs**, fill form, click  immediately visible on
+                          **Publish**               public Jobs page.
+
+  **10. Responsive UI**   Resize your browser       Mobile hamburger toggle
+                          window to mobile width    menu appears and
+                                                    operates smoothly.
+  -------------------------------------------------------------------------
+
+------------------------------------------------------------------------
 
 ## 🛠️ Configuration Settings
 
-Application configuration is stored in `.env`. Key settings:
+Application configuration is stored locally in `.env`. Keep `.env` out
+of Git; commit only `.env.example` with placeholder values. Never put a
+real secret key or password in this README.
 
-```ini
+``` ini
 # Flask secret key for sessions
-SECRET_KEY=your-secret-key-here
+SECRET_KEY=replace-with-a-random-secret-key
 
 # MySQL Database credentials
 DB_HOST=localhost
@@ -210,52 +297,74 @@ MAX_CONTENT_LENGTH=5242880
 UPLOAD_FOLDER=uploads/resumes
 ```
 
----
+------------------------------------------------------------------------
 
 ## ❓ Troubleshooting & Common Questions
 
 ### 1. PowerShell Script Execution Error
-If running `.\.venv\Scripts\Activate.ps1` gives `running scripts is disabled on this system`, run this once in PowerShell:
-```powershell
+
+If running `.\.venv\Scripts\Activate.ps1` gives
+`running scripts is disabled on this system`, run this once in
+PowerShell:
+
+``` powershell
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ```
+
 Then run `.\.venv\Scripts\Activate.ps1` again.
 
 ### 2. Can't Connect to MySQL Server (10061)
-- Verify the **MySQL** module is started in the **XAMPP Control Panel**.
-- Test connection manually:
-  ```powershell
-  C:\xampp\mysql\bin\mysql.exe -u root
-  ```
-- If your local root account uses a password, set `DB_PASSWORD=your_password` in `.env`.
+
+-   Verify the **MySQL** module is started in the **XAMPP Control
+    Panel**.
+
+-   Test connection manually:
+
+    ``` powershell
+    C:\xampp\mysql\bin\mysql.exe -u root
+    ```
+
+-   If your local root account uses a password, set
+    `DB_PASSWORD=your_password` in `.env`.
 
 ### 3. Port 5000 is Busy / Already in Use
+
 You can run Flask on another port by running:
-```powershell
+
+``` powershell
 python -m flask run --port 5001
 ```
+
 And access it at `http://127.0.0.1:5001`.
 
 ### 4. Reset Admin Account
-If you forget the admin credentials, reset them instantly:
-```powershell
-python init_admin.py admin Admin@12345
-```
 
----
+If you forget the administrator credentials, check the usage
+instructions in `init_admin.py` and use only the reset procedure
+supported by that script. Do not publish passwords or place them in
+README commands.
+
+------------------------------------------------------------------------
 
 ## 📋 Completed Deliverables Summary
 
-- [x] Corrected folder structure and removed misplaced files from `.venv`.
-- [x] Responsive dark-blue and crisp white UI theme in `static/css/style.css` (no 404 static errors).
-- [x] Complete MySQL relational database schema in `database/schema.sql`.
-- [x] Student registration, login, logout, and profile management with Werkzeug password hashing.
-- [x] Job search, keyword filtering, and detail views.
-- [x] Resume upload with size/type validation and duplicate application prevention.
-- [x] Student dashboard with live application tracking (`Pending`, `Shortlisted`, `Selected`, `Rejected`).
-- [x] Protected Admin area with drive creation, editing, status toggling, and applicant screening.
-- [x] Secure admin initialization utility (`init_admin.py`).
-- [x] CSRF protection and custom 404/500 error pages.
-- [x] Full automated integration test suite (`test_app.py`).
-- [x] Incomplete features: None. All requirements from the specification are fully implemented.
-
+-   [x] Corrected folder structure and removed misplaced files from
+    `.venv`.
+-   [x] Responsive dark-blue and crisp white UI theme in
+    `static/css/style.css` (no 404 static errors).
+-   [x] Complete MySQL relational database schema in
+    `database/schema.sql`.
+-   [x] Student registration, login, logout, and profile management with
+    Werkzeug password hashing.
+-   [x] Job search, keyword filtering, and detail views.
+-   [x] Resume upload with size/type validation and duplicate
+    application prevention.
+-   [x] Student dashboard with live application tracking (`Pending`,
+    `Shortlisted`, `Selected`, `Rejected`).
+-   [x] Protected Admin area with drive creation, editing, status
+    toggling, and applicant screening.
+-   [x] Secure admin initialization utility (`init_admin.py`).
+-   [x] CSRF protection and custom 404/500 error pages.
+-   [x] Full automated integration test suite (`test_app.py`).
+-   [x] Incomplete features: None. All requirements from the
+    specification are fully implemented.
