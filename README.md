@@ -34,52 +34,48 @@ Designed specifically for college campus recruitment drives, allowing students t
 
 ## 📁 Project Architecture
 
-```text
-smart campus placement/
+smart-campus-placement/
 │
-├── app.py                     # Main Flask application, routes & business logic
-├── config.py                  # Database & environment configuration
-├── init_admin.py              # Command-line utility to initialize/reset admin account
-├── test_app.py                # Automated integration test suite
-├── requirements.txt           # Python dependencies
-├── README.md                  # Complete documentation and setup guide
-├── .env                       # Local environment variables
-├── .env.example               # Template environment configuration
-├── .gitignore                 # Git ignore rules for virtualenv, uploads, etc.
+├── app.py
+├── config.py
+├── init_admin.py
+├── test_app.py
+├── requirements.txt
+├── README.md
+├── .env.example
+├── .gitignore
 │
-├── templates/                 # Jinja2 HTML Templates
-│   ├── base.html              # Shared responsive navigation, alerts & footer
-│   ├── index.html             # Homepage with hero, statistics & feature cards
-│   ├── register.html          # Student registration form with validation
-│   ├── login.html             # Student login form
-│   ├── admin_login.html       # Administrator portal login
-│   ├── jobs.html              # Searchable and filterable job listings
-│   ├── job_details.html       # Detailed drive specifications & application form
-│   ├── student_dashboard.html # Student dashboard with status cards & recent applications
-│   ├── admin_dashboard.html   # Admin dashboard with system metrics & quick actions
-│   ├── applications.html      # Student's submitted applications view
-│   ├── admin_applications.html# Admin application screening & status updates
-│   ├── admin_students.html    # Admin student candidate directory
-│   ├── profile.html           # Student profile & password settings
-│   ├── manage_jobs.html       # Admin job creation & management interface
-│   ├── 404.html               # Custom 404 Not Found error page
-│   └── 500.html               # Custom 500 Server Error page
+├── templates/
+│   ├── base.html
+│   ├── index.html
+│   ├── register.html
+│   ├── login.html
+│   ├── admin_login.html
+│   ├── jobs.html
+│   ├── job_details.html
+│   ├── student_dashboard.html
+│   ├── admin_dashboard.html
+│   ├── applications.html
+│   ├── admin_applications.html
+│   ├── admin_students.html
+│   ├── profile.html
+│   ├── manage_jobs.html
+│   ├── 404.html
+│   └── 500.html
 │
 ├── static/
 │   ├── css/
-│   │   └── style.css          # Modern dark-blue & white responsive stylesheet
+│   │   └── style.css
 │   ├── js/
-│   │   └── script.js          # Interactive UI scripts (navigation, alerts, file preview)
-│   └── images/                # Static image assets
+│   │   └── script.js
+│   └── images/
 │
 ├── database/
-│   └── schema.sql             # MySQL schema with tables & sample demo jobs
+│   └── schema.sql
 │
-├── uploads/
-│   └── resumes/               # Secure directory storing uploaded student resumes
-│
-└── .venv/                     # Python 3.14 virtual environment
-```
+└── uploads/
+    └── resumes/
+        └── .gitkeep
 
 ---
 
