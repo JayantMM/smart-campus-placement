@@ -127,17 +127,17 @@ pip install -r requirements.txt
 
 ### Step 4: Initialize the Admin Account
 
-Run the provided helper script to create the default administrator account:
+Run the administrator initialization script from your project directory:
 
-```powershell
 python init_admin.py
-```
 
-Default credentials:
-- **Username:** `admin`
-- **Password:** `Admin@12345`
+For security, configure a unique administrator username and password. Do not use default or publicly shared credentials.
 
-*(You can also set custom credentials by running: `python init_admin.py <your_username> <your_password>`)*
+To provide custom credentials, use:
+
+python init_admin.py <your_username> <your_password>
+
+Keep administrator credentials private and never commit them to the public repository.
 
 ---
 
