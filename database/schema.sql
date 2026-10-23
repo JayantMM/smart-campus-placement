@@ -1,13 +1,10 @@
 -- ==========================================================
 -- Smart Campus Placement Management System
--- Database Schema & Initial Seed Data
+-- Aiven MySQL Database Schema
+-- Database: defaultdb
 -- ==========================================================
 
-CREATE DATABASE IF NOT EXISTS smart_campus_placement
-  CHARACTER SET utf8mb4
-  COLLATE utf8mb4_unicode_ci;
-
-USE smart_campus_placement;
+USE defaultdb;
 
 -- ----------------------------------------------------------
 -- 1. Students Table
@@ -62,87 +59,159 @@ CREATE TABLE IF NOT EXISTS applications (
     job_id INT NOT NULL,
     resume_filename VARCHAR(255) NOT NULL,
     cover_letter TEXT DEFAULT NULL,
-    application_status ENUM('Pending', 'Shortlisted', 'Selected', 'Rejected') DEFAULT 'Pending',
+    application_status ENUM(
+        'Pending',
+        'Shortlisted',
+        'Selected',
+        'Rejected'
+    ) DEFAULT 'Pending',
     applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_application_student FOREIGN KEY (student_id)
-        REFERENCES students(id) ON DELETE CASCADE,
-    CONSTRAINT fk_application_job FOREIGN KEY (job_id)
-        REFERENCES jobs(id) ON DELETE CASCADE,
-    CONSTRAINT uk_student_job UNIQUE (student_id, job_id),
+
+    CONSTRAINT fk_application_student
+        FOREIGN KEY (student_id)
+        REFERENCES students(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_application_job
+        FOREIGN KEY (job_id)
+        REFERENCES jobs(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT uk_student_job
+        UNIQUE (student_id, job_id),
+
     INDEX idx_application_status (application_status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ----------------------------------------------------------
--- Seed Initial Demo Administrator
--- Username: admin
--- Default Password: Admin@12345
+-- 5. Demo Administrator
+-- Inserts only if username 'admin' does not already exist.
 -- ----------------------------------------------------------
 INSERT INTO admins (username, password_hash)
 VALUES (
     'admin',
     'scrypt:32768:8:1$8zAEOU7jZEHPZYUj$5b8bbf0d98b345d47bd8259363321cc44445ec3ac7644d486b51a92700cc0031d943a214a5e0cc0831642df3f13364369c559f7abf974a22d5f7aa74344b687d'
 )
-ON DUPLICATE KEY UPDATE username=username;
+ON DUPLICATE KEY UPDATE username = username;
 
 -- ----------------------------------------------------------
--- Seed Realistic Sample Job Opportunities (Demo Data)
+-- 6. Sample Job Openings
+-- Insert each demo job only if its company and title
+-- combination does not already exist.
 -- ----------------------------------------------------------
-INSERT INTO jobs (company_name, job_title, description, required_skills, eligibility, location, salary, application_deadline, status)
-VALUES
-(
+
+INSERT INTO jobs (
+    company_name,
+    job_title,
+    description,
+    required_skills,
+    eligibility,
+    location,
+    salary,
+    application_deadline,
+    status
+)
+SELECT
     'Apex Cloud Systems',
     'Graduate Software Engineer (Python / Flask)',
-    'Join our cloud engineering team to design, develop, and maintain high-performance microservices and RESTful APIs using Python, Flask, and relational databases. You will collaborate with cross-functional teams in an agile environment and participate in code reviews.',
+    'Join our cloud engineering team to develop and maintain applications and REST APIs using Python, Flask, and relational databases.',
     'Python, Flask, MySQL, REST APIs, Git',
-    'B.Tech / B.E in CS, IT, or ECE with min 65% aggregate or 6.5 CGPA',
+    'B.Tech / B.E in CS, IT, or ECE with minimum 65% aggregate or 6.5 CGPA',
     'Bangalore, Karnataka',
     '₹6.5 - ₹8.5 LPA',
     DATE_ADD(CURRENT_DATE, INTERVAL 30 DAY),
     'Active'
-),
-(
+WHERE NOT EXISTS (
+    SELECT 1 FROM jobs
+    WHERE company_name = 'Apex Cloud Systems'
+      AND job_title = 'Graduate Software Engineer (Python / Flask)'
+);
+
+INSERT INTO jobs (
+    company_name, job_title, description, required_skills,
+    eligibility, location, salary, application_deadline, status
+)
+SELECT
     'NexGen Digital Labs',
     'Frontend Developer Trainee',
-    'We are seeking an enthusiastic frontend developer skilled in modern HTML5, CSS3, JavaScript, and responsive UI design. You will build user-friendly interfaces, dashboards, and responsive web portals for enterprise clients worldwide.',
-    'HTML5, CSS3, JavaScript (ES6+), Bootstrap/Tailwind, Responsive Design',
-    'B.Tech, BCA, MCA, or B.Sc Computer Science graduates with strong portfolio',
+    'Build responsive web interfaces and dashboards using HTML, CSS, and JavaScript.',
+    'HTML5, CSS3, JavaScript, Responsive Design',
+    'B.Tech, BCA, MCA, or B.Sc Computer Science graduates',
     'Hyderabad, Telangana',
     '₹5.0 - ₹6.8 LPA',
     DATE_ADD(CURRENT_DATE, INTERVAL 40 DAY),
     'Active'
-),
-(
+WHERE NOT EXISTS (
+    SELECT 1 FROM jobs
+    WHERE company_name = 'NexGen Digital Labs'
+      AND job_title = 'Frontend Developer Trainee'
+);
+
+INSERT INTO jobs (
+    company_name, job_title, description, required_skills,
+    eligibility, location, salary, application_deadline, status
+)
+SELECT
     'InfraMetrics Analytics',
     'Associate Data Analyst',
-    'Work alongside senior analytics professionals to clean, transform, and analyze placement and operational datasets. Create insightful visualizations and dashboards to support business decision-making.',
-    'SQL, Python (Pandas/NumPy), Excel, PowerBI / Tableau',
-    'Open to all engineering and mathematics/statistics graduates with 60%+ aggregate',
+    'Clean, transform, and analyze datasets and create visualizations to support business decisions.',
+    'SQL, Python, Pandas, NumPy, Excel, Power BI',
+    'Graduates in computer science, engineering, mathematics, or statistics with 60%+ aggregate',
     'Pune, Maharashtra',
     '₹5.5 - ₹7.2 LPA',
     DATE_ADD(CURRENT_DATE, INTERVAL 25 DAY),
     'Active'
-),
-(
+WHERE NOT EXISTS (
+    SELECT 1 FROM jobs
+    WHERE company_name = 'InfraMetrics Analytics'
+      AND job_title = 'Associate Data Analyst'
+);
+
+INSERT INTO jobs (
+    company_name, job_title, description, required_skills,
+    eligibility, location, salary, application_deadline, status
+)
+SELECT
     'Q-Matrix Technologies',
     'Quality Assurance & Automation Engineer',
-    'Exciting opportunity for entry-level candidates interested in software testing and quality automation. Responsibilities include writing test cases, performing regression testing, and creating automated scripts using Python and Selenium.',
-    'Manual Testing, Selenium, Python, Test Automation, Bug Reporting',
-    'B.E / B.Tech in CS, IT, EEE, ECE with no active backlogs',
+    'Write test cases, perform regression testing, and create automation scripts.',
+    'Manual Testing, Selenium, Python, Test Automation',
+    'B.E / B.Tech in CS, IT, EEE, or ECE with no active backlogs',
     'Chennai, Tamil Nadu',
     '₹4.5 - ₹5.8 LPA',
     DATE_ADD(CURRENT_DATE, INTERVAL 20 DAY),
     'Active'
-),
-(
+WHERE NOT EXISTS (
+    SELECT 1 FROM jobs
+    WHERE company_name = 'Q-Matrix Technologies'
+      AND job_title = 'Quality Assurance & Automation Engineer'
+);
+
+INSERT INTO jobs (
+    company_name, job_title, description, required_skills,
+    eligibility, location, salary, application_deadline, status
+)
+SELECT
     'StratoSphere Networks',
     'Junior Cloud & DevOps Associate',
-    'Help us deploy and scale cloud-native applications on AWS and Docker. You will learn CI/CD pipelines, container management, and infrastructure monitoring in a supportive team environment.',
-    'Linux Fundamentals, Docker, AWS Basics, Python/Bash Scripting',
-    'B.Tech in CS/IT/ECE or MCA with strong operating systems foundation',
+    'Assist with deploying and monitoring cloud applications, containers, and CI/CD pipelines.',
+    'Linux, Docker, AWS Basics, Python, Bash',
+    'B.Tech in CS/IT/ECE or MCA with a strong operating systems foundation',
     'Remote (India)',
     '₹7.0 - ₹9.0 LPA',
     DATE_ADD(CURRENT_DATE, INTERVAL 45 DAY),
     'Active'
-)
-ON DUPLICATE KEY UPDATE id=id;
+WHERE NOT EXISTS (
+    SELECT 1 FROM jobs
+    WHERE company_name = 'StratoSphere Networks'
+      AND job_title = 'Junior Cloud & DevOps Associate'
+);
 
+-- ----------------------------------------------------------
+-- 7. Verify the tables and sample jobs
+-- ----------------------------------------------------------
+SHOW TABLES;
+
+SELECT id, company_name, job_title, status, application_deadline
+FROM jobs
+ORDER BY id;
