@@ -368,3 +368,25 @@ README commands.
 -   [x] Full automated integration test suite (`test_app.py`).
 -   [x] Incomplete features: None. All requirements from the
     specification are fully implemented.
+
+---
+
+## ?? Project Screenshots
+
+### 1. Home Page
+![Home Page](uploads/screenshots/home.png)
+
+### 2. Platform Features
+![Platform Features](uploads/screenshots/features.png)
+
+### 3. Latest Job Openings
+![Latest Job Openings](uploads/screenshots/jobs.png)
+
+### 4. Admin Dashboard
+![Admin Dashboard](uploads/screenshots/admin-dashboard.png)
+
+### 5. Job Drive Management
+![Job Drive Management](uploads/screenshots/job-drives.png)
+
+### 6. Student Dashboard
+![Student Dashboard](uploads/screenshots/student-dashboard.png)
